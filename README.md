@@ -16,5 +16,5 @@ EOF
 ## Installation
 
 ```
-go get -u github.com/hashrocket.com/ws
+go get -u github.com/hashrocket/ws
 ```
