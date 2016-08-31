@@ -60,7 +60,7 @@ func (s *session) readWebsocket() {
 	for {
 		n, err := s.ws.Read(buf)
 		if n > 0 {
-			fmt.Fprintln(s.rl.Stdout(), string(buf[:n]))
+			fmt.Fprintln(s.rl.Stdout(), "<", string(buf[:n]))
 		}
 		if err != nil {
 			s.errChan <- err
