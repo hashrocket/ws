@@ -162,7 +162,7 @@ func (t *Terminal) Close() error {
 		return nil
 	}
 	t.stopChan <- struct{}{}
-	t.wg.Wait()
+	// t.wg.Wait()
 	return t.ExitRawMode()
 }
 
