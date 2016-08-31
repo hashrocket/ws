@@ -3,11 +3,16 @@ package main
 import (
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/chzyer/readline"
 	"golang.org/x/net/websocket"
 )
+
+type session struct {
+	ws      *websocket.Conn
+	rl      *readline.Instance
+	errChan chan error
+}
 
 func connect(url, origin string, rlConf *readline.Config) error {
 	ws, err := websocket.Dial(url, "", origin)
@@ -21,36 +26,45 @@ func connect(url, origin string, rlConf *readline.Config) error {
 	}
 	defer rl.Close()
 
-	go rx(ws, rl.Stdout())
+	sess := &session{
+		ws:      ws,
+		rl:      rl,
+		errChan: make(chan error),
+	}
 
+	go sess.readConsole()
+	go sess.readWebsocket()
+
+	return <-sess.errChan
+}
+
+func (s *session) readConsole() {
 	for {
-		line, err := rl.Readline()
-		switch err {
-		case io.EOF, readline.ErrInterrupt:
-			return nil
-		case nil:
-		default:
-			return err
+		line, err := s.rl.Readline()
+		if err != nil {
+			s.errChan <- err
+			return
 		}
 
-		_, err = io.WriteString(ws, line)
+		_, err = io.WriteString(s.ws, line)
 		if err != nil {
-			return err
+			s.errChan <- err
+			return
 		}
 	}
 }
 
-func rx(ws *websocket.Conn, stdout io.Writer) {
+func (s *session) readWebsocket() {
 	buf := make([]byte, 4096)
 
 	for {
-		n, err := ws.Read(buf)
+		n, err := s.ws.Read(buf)
 		if n > 0 {
-			fmt.Fprintln(stdout, string(buf[:n]))
+			fmt.Fprintln(s.rl.Stdout(), string(buf[:n]))
 		}
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+			s.errChan <- err
+			return
 		}
 	}
 }
