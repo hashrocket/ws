@@ -3,22 +3,20 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/user"
+	"path/filepath"
 
 	"github.com/chzyer/readline"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func main() {
-	viper.SetDefault("prompt", "> ")
-
 	rootCmd := &cobra.Command{
 		Use:   "ws URL",
 		Short: "websocket tool",
 		Run:   root,
 	}
 	rootCmd.Flags().StringP("origin", "o", "", "websocket origin")
-	viper.BindPFlag("origin", rootCmd.Flags().Lookup("origin"))
 
 	rootCmd.Execute()
 }
@@ -31,13 +29,16 @@ func root(cmd *cobra.Command, args []string) {
 
 	url := args[0]
 	origin := url
-	if viper.IsSet("origin") {
-		origin = viper.GetString("origin")
+
+	var historyFile string
+	user, err := user.Current()
+	if err == nil {
+		historyFile = filepath.Join(user.HomeDir, ".ws_history")
 	}
 
-	err := connect(url, origin, &readline.Config{
-		Prompt:      viper.GetString("prompt"),
-		HistoryFile: "/tmp/readline.tmp",
+	err = connect(url, origin, &readline.Config{
+		Prompt:      "> ",
+		HistoryFile: historyFile,
 	})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
