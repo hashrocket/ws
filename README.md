@@ -1,6 +1,6 @@
 # ws
 
-ws is a simple command line websocket client designed for exploring and debugging websocket servers. ws includes readline-style keyboard shortcuts and persistent history.
+ws is a simple command line websocket client designed for exploring and debugging websocket servers. ws includes readline-style keyboard shortcuts, persistent history, and colorization.
 
 ```
 $ ws ws://localhost:3000/ws
