@@ -5,8 +5,8 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/chzyer/readline",
-			"Comment": "v1.4-4-g8159bd3",
-			"Rev": "8159bd380cc4d5b344668c55e969b9d16165368d"
+			"Comment": "v1.4-7-g4ffff9f",
+			"Rev": "4ffff9f41c7765e965fc9543d0242dd1088766ef"
 		},
 		{
 			"ImportPath": "github.com/inconshreveable/mousetrap",
