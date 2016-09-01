@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -58,6 +59,8 @@ func root(cmd *cobra.Command, args []string) {
 	})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		if err != io.EOF && err != readline.ErrInterrupt {
+			os.Exit(1)
+		}
 	}
 }
