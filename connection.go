@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/chzyer/readline"
+	"github.com/fatih/color"
 	"golang.org/x/net/websocket"
 )
 
@@ -56,11 +57,12 @@ func (s *session) readConsole() {
 
 func (s *session) readWebsocket() {
 	buf := make([]byte, 4096)
+	rxSprintf := color.New(color.FgGreen).SprintfFunc()
 
 	for {
 		n, err := s.ws.Read(buf)
 		if n > 0 {
-			fmt.Fprintln(s.rl.Stdout(), "<", string(buf[:n]))
+			fmt.Fprint(s.rl.Stdout(), rxSprintf("< %s\n", string(buf[:n])))
 		}
 		if err != nil {
 			s.errChan <- err
