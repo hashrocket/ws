@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"io"
+	"net/http"
 
 	"github.com/chzyer/readline"
 	"github.com/fatih/color"
-	"golang.org/x/net/websocket"
+	"github.com/gorilla/websocket"
 )
 
 type session struct {
@@ -16,7 +16,10 @@ type session struct {
 }
 
 func connect(url, origin string, rlConf *readline.Config) error {
-	ws, err := websocket.Dial(url, "", origin)
+	headers := make(http.Header)
+	headers.Add("Origin", origin)
+
+	ws, _, err := websocket.DefaultDialer.Dial(url, headers)
 	if err != nil {
 		return err
 	}
@@ -47,7 +50,7 @@ func (s *session) readConsole() {
 			return
 		}
 
-		_, err = io.WriteString(s.ws, line)
+		err = s.ws.WriteMessage(websocket.TextMessage, []byte(line))
 		if err != nil {
 			s.errChan <- err
 			return
@@ -56,17 +59,14 @@ func (s *session) readConsole() {
 }
 
 func (s *session) readWebsocket() {
-	buf := make([]byte, 4096)
 	rxSprintf := color.New(color.FgGreen).SprintfFunc()
 
 	for {
-		n, err := s.ws.Read(buf)
-		if n > 0 {
-			fmt.Fprint(s.rl.Stdout(), rxSprintf("< %s\n", string(buf[:n])))
-		}
+		_, buf, err := s.ws.ReadMessage()
 		if err != nil {
 			s.errChan <- err
 			return
 		}
+		fmt.Fprint(s.rl.Stdout(), rxSprintf("< %s\n", string(buf)))
 	}
 }

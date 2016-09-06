@@ -14,6 +14,11 @@
 			"Rev": "87d4004f2ab62d0d255e0a38f1680aa534549fe3"
 		},
 		{
+			"ImportPath": "github.com/gorilla/websocket",
+			"Comment": "v1.0.0-20-ga69d25b",
+			"Rev": "a69d25be2fe2923a97c2af6849b2f52426f68fc0"
+		},
+		{
 			"ImportPath": "github.com/inconshreveable/mousetrap",
 			"Rev": "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
 		},
@@ -33,10 +38,6 @@
 		{
 			"ImportPath": "github.com/spf13/pflag",
 			"Rev": "103ce5cd2042f2fe629c1957abb64ab3e7f50235"
-		},
-		{
-			"ImportPath": "golang.org/x/net/websocket",
-			"Rev": "6250b412798208e6c90b03b7c4f226de5aa299e2"
 		},
 		{
 			"ImportPath": "golang.org/x/sys/unix",
