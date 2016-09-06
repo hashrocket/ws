@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const Version = "0.2.0"
+const Version = "0.2.1"
 
 var options struct {
 	origin       string
