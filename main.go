@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -41,10 +42,23 @@ func root(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	url := args[0]
-	origin := url
+	dest, err := url.Parse(args[0])
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	var origin string
 	if options.origin != "" {
 		origin = options.origin
+	} else {
+		originURL := *dest
+		if dest.Scheme == "wss" {
+			originURL.Scheme = "https"
+		} else {
+			originURL.Scheme = "http"
+		}
+		origin = originURL.String()
 	}
 
 	var historyFile string
@@ -53,7 +67,7 @@ func root(cmd *cobra.Command, args []string) {
 		historyFile = filepath.Join(user.HomeDir, ".ws_history")
 	}
 
-	err = connect(url, origin, &readline.Config{
+	err = connect(dest.String(), origin, &readline.Config{
 		Prompt:      "> ",
 		HistoryFile: historyFile,
 	})
