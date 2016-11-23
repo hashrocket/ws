@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 	"net/http"
+	"regexp"
 
 	"github.com/chzyer/readline"
 	"github.com/fatih/color"
@@ -58,15 +60,32 @@ func (s *session) readConsole() {
 	}
 }
 
+func bytesToFormattedHex(bytes []byte) string {
+	text := hex.EncodeToString(bytes)
+	return regexp.MustCompile("(..)").ReplaceAllString(text, "$1 ")
+}
+
 func (s *session) readWebsocket() {
 	rxSprintf := color.New(color.FgGreen).SprintfFunc()
 
 	for {
-		_, buf, err := s.ws.ReadMessage()
+		msgType, buf, err := s.ws.ReadMessage()
 		if err != nil {
 			s.errChan <- err
 			return
 		}
-		fmt.Fprint(s.rl.Stdout(), rxSprintf("< %s\n", string(buf)))
+
+		var text string
+		switch msgType {
+		case websocket.TextMessage:
+			text = string(buf)
+		case websocket.BinaryMessage:
+			text = bytesToFormattedHex(buf)
+		default:
+			s.errChan <- fmt.Errorf("unknown websocket frame type: %d", msgType)
+			return
+		}
+
+		fmt.Fprint(s.rl.Stdout(), rxSprintf("< %s\n", text))
 	}
 }
