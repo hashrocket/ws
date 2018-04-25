@@ -12,9 +12,11 @@ import (
 )
 
 type session struct {
-	ws      *websocket.Conn
-	rl      *readline.Instance
-	errChan chan error
+	ws          *websocket.Conn
+	rl          *readline.Instance
+	errChan     chan error
+	pingHandler func(string) error
+	pongHandler func(string) error
 }
 
 func connect(url, origin string, authHeader string, rlConf *readline.Config) error {
@@ -36,10 +38,24 @@ func connect(url, origin string, authHeader string, rlConf *readline.Config) err
 	defer rl.Close()
 
 	sess := &session{
-		ws:      ws,
-		rl:      rl,
-		errChan: make(chan error),
+		ws:          ws,
+		rl:          rl,
+		errChan:     make(chan error),
+		pingHandler: ws.PingHandler(),
+		pongHandler: ws.PongHandler(),
 	}
+
+	ws.SetPongHandler(func(appData string) error {
+		rxSprintf := color.New(color.FgGreen).SprintfFunc()
+		fmt.Fprint(sess.rl.Stdout(), rxSprintf("< %s\n", "< PONG"))
+		return sess.pongHandler(appData)
+	})
+
+	ws.SetPingHandler(func(appData string) error {
+		rxSprintf := color.New(color.FgGreen).SprintfFunc()
+		fmt.Fprint(sess.rl.Stdout(), rxSprintf("< %s\n", "> PING"))
+		return sess.pingHandler(appData)
+	})
 
 	go sess.readConsole()
 	go sess.readWebsocket()
@@ -55,10 +71,19 @@ func (s *session) readConsole() {
 			return
 		}
 
-		err = s.ws.WriteMessage(websocket.TextMessage, []byte(line))
-		if err != nil {
-			s.errChan <- err
-			return
+		if line == "ping" {
+			err = s.ws.WriteMessage(websocket.PingMessage, nil)
+			if err != nil {
+				s.errChan <- err
+				return
+			}
+		} else {
+
+			err = s.ws.WriteMessage(websocket.TextMessage, []byte(line))
+			if err != nil {
+				s.errChan <- err
+				return
+			}
 		}
 	}
 }
