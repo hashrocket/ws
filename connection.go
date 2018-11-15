@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/hex"
 	"fmt"
 	"net/http"
@@ -17,11 +18,17 @@ type session struct {
 	errChan chan error
 }
 
-func connect(url, origin string, rlConf *readline.Config) error {
+func connect(url, origin string, rlConf *readline.Config, allowInsecure bool) error {
 	headers := make(http.Header)
 	headers.Add("Origin", origin)
 
-	ws, _, err := websocket.DefaultDialer.Dial(url, headers)
+	dialer := websocket.Dialer{
+		Proxy: http.ProxyFromEnvironment,
+		TLSClientConfig:&tls.Config{
+			InsecureSkipVerify: allowInsecure,
+		},
+	}
+	ws, _, err := dialer.Dial(url, headers)
 	if err != nil {
 		return err
 	}
