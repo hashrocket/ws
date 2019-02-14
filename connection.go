@@ -18,15 +18,16 @@ type session struct {
 	errChan chan error
 }
 
-func connect(url, origin string, rlConf *readline.Config, allowInsecure bool) error {
+func connect(url, origin string, subProtocals string, rlConf *readline.Config, allowInsecure bool) error {
 	headers := make(http.Header)
 	headers.Add("Origin", origin)
 
 	dialer := websocket.Dialer{
 		Proxy: http.ProxyFromEnvironment,
-		TLSClientConfig:&tls.Config{
+		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: allowInsecure,
 		},
+		Subprotocols: []string{subProtocals},
 	}
 	ws, _, err := dialer.Dial(url, headers)
 	if err != nil {
