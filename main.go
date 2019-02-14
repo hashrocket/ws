@@ -17,7 +17,8 @@ const Version = "0.2.1"
 var options struct {
 	origin       string
 	printVersion bool
-	insecure bool
+	insecure     bool
+	subProtocals string
 }
 
 func main() {
@@ -29,6 +30,7 @@ func main() {
 	rootCmd.Flags().StringVarP(&options.origin, "origin", "o", "", "websocket origin")
 	rootCmd.Flags().BoolVarP(&options.printVersion, "version", "v", false, "print version")
 	rootCmd.Flags().BoolVarP(&options.insecure, "insecure", "k", false, "skip ssl certificate check")
+	rootCmd.Flags().StringVarP(&options.subProtocals, "subprotocal", "s", "", "sec-websocket-protocal field")
 
 	rootCmd.Execute()
 }
@@ -69,7 +71,7 @@ func root(cmd *cobra.Command, args []string) {
 		historyFile = filepath.Join(user.HomeDir, ".ws_history")
 	}
 
-	err = connect(dest.String(), origin, &readline.Config{
+	err = connect(dest.String(), origin, options.subProtocals, &readline.Config{
 		Prompt:      "> ",
 		HistoryFile: historyFile,
 	}, options.insecure)
