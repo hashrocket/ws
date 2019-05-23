@@ -8,6 +8,7 @@ ws is a simple command line websocket client designed for exploring and debuggin
 
 ```
 go get -u github.com/hashrocket/ws
+PATH=$PATH:~/go/bin
 ```
 
 ## Usage
