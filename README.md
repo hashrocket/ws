@@ -30,13 +30,13 @@ EOF
 Build Docker Image
 
 ```
-$ docker build -t hashrocket/ws .
+$ docker build -t sldennis/ws .
 ```
 
 Run Docker Image
 
 ```
-$ docker run -it hashrocket/ws
+$ docker run -it sldennis/ws
 root@f762a8a163fd:/go/src/github.com/hashrocket/ws# ws ws://localhost:3000/ws
 > {"type": "echo", "payload": "Hello, world"}
 < {"type":"echo","payload":"Hello, world"}
