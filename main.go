@@ -17,7 +17,8 @@ const Version = "0.2.1"
 var options struct {
 	origin       string
 	printVersion bool
-	insecure bool
+	insecure     bool
+	compression  bool
 }
 
 func main() {
@@ -29,6 +30,7 @@ func main() {
 	rootCmd.Flags().StringVarP(&options.origin, "origin", "o", "", "websocket origin")
 	rootCmd.Flags().BoolVarP(&options.printVersion, "version", "v", false, "print version")
 	rootCmd.Flags().BoolVarP(&options.insecure, "insecure", "k", false, "skip ssl certificate check")
+	rootCmd.Flags().BoolVarP(&options.compression, "compression", "c", false, "enable compression")
 
 	rootCmd.Execute()
 }
@@ -72,7 +74,7 @@ func root(cmd *cobra.Command, args []string) {
 	err = connect(dest.String(), origin, &readline.Config{
 		Prompt:      "> ",
 		HistoryFile: historyFile,
-	}, options.insecure)
+	}, options.insecure, options.compression)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		if err != io.EOF && err != readline.ErrInterrupt {
