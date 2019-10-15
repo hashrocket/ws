@@ -1,7 +1,7 @@
 {
 	"ImportPath": "github.com/hashrocket/ws",
 	"GoVersion": "go1.7",
-	"GodepVersion": "v74",
+	"GodepVersion": "v79",
 	"Deps": [
 		{
 			"ImportPath": "github.com/chzyer/readline",
@@ -15,8 +15,8 @@
 		},
 		{
 			"ImportPath": "github.com/gorilla/websocket",
-			"Comment": "v1.0.0-20-ga69d25b",
-			"Rev": "a69d25be2fe2923a97c2af6849b2f52426f68fc0"
+			"Comment": "v1.2.0-44-g5ed622c",
+			"Rev": "5ed622c449da6d44c3c8329331ff47a9e5844f71"
 		},
 		{
 			"ImportPath": "github.com/inconshreveable/mousetrap",
