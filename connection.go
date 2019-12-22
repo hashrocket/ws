@@ -24,7 +24,7 @@ func connect(url, origin string, rlConf *readline.Config, allowInsecure bool) er
 
 	dialer := websocket.Dialer{
 		Proxy: http.ProxyFromEnvironment,
-		TLSClientConfig:&tls.Config{
+		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: allowInsecure,
 		},
 	}

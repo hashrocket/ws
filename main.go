@@ -17,7 +17,7 @@ const Version = "0.2.1"
 var options struct {
 	origin       string
 	printVersion bool
-	insecure bool
+	insecure     bool
 }
 
 func main() {
@@ -48,6 +48,22 @@ func root(cmd *cobra.Command, args []string) {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
+	}
+
+	// Correct and add missing schemes.
+	switch dest.Scheme {
+	case "ws", "wss":
+	case "http":
+		dest.Scheme = "ws"
+	case "https":
+		dest.Scheme = "wss"
+	default:
+		// Likely no scheme at all, e.g. "localhost:8000".
+		dest, err = url.Parse("ws://" + args[0])
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
 	}
 
 	var origin string
